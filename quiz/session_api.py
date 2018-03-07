@@ -1,4 +1,6 @@
+import json
 from bson import json_util
+from datetime import datetime, timedelta
 from flask import Blueprint, request
 
 from quiz.Session import Session
@@ -24,3 +26,16 @@ def patch_session(name):
     except PermissionError as e:
         return e.args[0], 403
     return 'user successfully added', 200
+
+
+@session_app.route('/session/<name>', methods=['POST'])
+def post_session(name):
+    try:
+        Session(name,
+                category=request.form['category'],
+                private=json.loads(request.form['private']),
+                password=request.form['password'],
+                deadline=datetime.now() + timedelta(hours=int(request.form['run-time']))).create()
+    except ValueError as e:
+        return e.args[0], 400
+    return 'session successfully created', 200
