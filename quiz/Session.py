@@ -81,7 +81,7 @@ class Session:
             {'$match': {'name': self.name}},
             {'$project': {'_id': 0, 'password': 0}}
         ]
-        return list(session_coll.aggregate(pipeline))[0]
+        return list(session_coll.aggregate(pipeline))
 
     def get_private_settings(self):
         settings = list(session_coll.find({'name': self.name}, {'_id': 0, 'password': 1, 'private': 1}))[0]

@@ -16,7 +16,8 @@ def get_session_all():
 
 @session_app.route('/session/<name>', methods=['GET'])
 def get_session(name):
-    return json_util.dumps(Session(name).get()), 200
+    session = Session(name).get()
+    return (json_util.dumps(session), 200) if len(session) > 0 else (json.dumps(None), 404)
 
 
 @session_app.route('/session/<name>', methods=['PATCH'])
