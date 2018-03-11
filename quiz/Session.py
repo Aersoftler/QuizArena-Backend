@@ -91,9 +91,10 @@ class Session:
         return settings['password'], settings['private']
 
     @staticmethod
-    def close_finished_sessions():
+    def tidy_up_sessions():
         while True:
-            session_coll.update_many({'deadline': {'$lt': datetime.now()}}, {'$set': {'closed': True}})
+            session_coll.update_many({'deadline': {'$lt': datetime.now()}, 'closed': False}, {'$set': {'closed': True}})
+            session_coll.delete_many({'deadline': {'$lt': datetime.now() - timedelta(days=1)}})
             sleep(1)
 
     @staticmethod
