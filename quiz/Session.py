@@ -57,7 +57,8 @@ class Session:
             raise ValueError('User cannot be found in database')
         return session_coll.update_one(
             {'$and': [{'name': self.name}, {'users.user': user.id}]},
-            {'$set': {'users.$.score': score}})
+            {'$set': {'users.$.score': score}}
+        )
 
     def remove_user(self, user: User):
         return session_coll.update_one({'name': self.name}, {'$pull': {'users': {'user': user.id}}})

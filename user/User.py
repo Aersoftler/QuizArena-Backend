@@ -21,7 +21,9 @@ class User:
 
     def update_display_name(self):
         if self.display_name is None:
-            raise ValueError('\'display_name\' cannot be None')
+            raise ValueError('display_name cannot be None')
+        if self.get() is None:
+            raise ValueError('user does not exist')
         return self.update('display_name')
 
     def update_password(self):
@@ -31,7 +33,10 @@ class User:
         return self.update('password')
 
     def update_password_api(self, old_password: str):
-        if self.get()['password'] != hash_password(old_password):
+        user = self.get()
+        if user is None:
+            raise ValueError('user does not exist')
+        if user['password'] != hash_password(old_password):
             raise ValueError('Wrong old password')
         self.update_password()
 
@@ -39,6 +44,8 @@ class User:
         return user_coll.update({'id': self.id}, {'$set': {field: self.__dict__[field]}})
 
     def add_total_score(self, score: int):
+        if self.get() is None:
+            raise ValueError('user does not exist')
         return user_coll.update({'id': self.id}, {'$inc': {'total_score': score}})
 
     def __create_password(self):

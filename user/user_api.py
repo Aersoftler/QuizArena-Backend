@@ -19,16 +19,19 @@ def patch_user(user):
             User(user, password=request.form['new_password'])\
                 .update_password_api(request.form['old_password'])
         except ValueError as e:
-            return e, 400
+            return e.args[0], 400
         return 'Password successfully changed', 200
     elif request.args['update'] == 'display_name':
         try:
             User(user, display_name=request.form['display_name']).update_display_name()
         except ValueError as e:
-            return e, 400
+            return e.args[0], 400
         return 'display_name successfully changed', 200
     elif request.args['update'] == 'total_score':
-        User(user).add_total_score(request.form['score'])
+        try:
+            User(user).add_total_score(int(request.form['score']))
+        except ValueError as e:
+            return e.args[0], 400
         return 'score successfully added to total-score', 200
     else:
         return 'no valid update-parameter', 400
@@ -39,5 +42,5 @@ def post_user(user):
     try:
         User(user, password=request.form['password']).register()
     except ValueError as e:
-        return e, 400
+        return e.args[0], 400
     return 'user successfully registered', 200

@@ -22,11 +22,26 @@ def get_session(name):
 
 @session_app.route('/session/<name>', methods=['PATCH'])
 def patch_session(name):
-    try:
-        Session(name).add_user(User(request.args['user']), request.form['password'])
-    except PermissionError as e:
-        return e.args[0], 403
-    return 'user successfully added', 200
+    if request.args['update'] == 'add-user':
+        try:
+            Session(name).add_user(User(request.form['user']), request.form['password'])
+        except PermissionError as e:
+            return e.args[0], 403
+        return 'user successfully added', 200
+    elif request.args['update'] == 'set-score':
+        user = User(request.form['user'])
+        score = int(request.form['score'])
+        try:
+            Session(name).set_users_score(user, score)
+        except ValueError as e:
+            return e.args[0], 400
+        # try:
+        #     user.add_total_score(score)
+        # except ValueError as e:
+        #     return e.args[0], 400
+        return 'score successfully set', 200
+    else:
+        return 'no valid update-parameter', 400
 
 
 @session_app.route('/session/<name>', methods=['POST'])
