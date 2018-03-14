@@ -1,5 +1,6 @@
 import json
 from flask import Blueprint, request
+from pymongo import errors
 
 from user.User import User
 
@@ -42,5 +43,7 @@ def post_user(user):
     try:
         User(user, password=request.form['password']).register()
     except ValueError as e:
+        return e.args[0], 400
+    except errors.DuplicateKeyError as e:
         return e.args[0], 400
     return 'user successfully registered', 200
