@@ -32,19 +32,19 @@ class User:
         self.__create_password()
         return self.update('password')
 
-    def update_password_api(self, old_password: str):
-        user = self.get()
-        if user is None:
+    def update_password_api(self, new_password: str, old_password: str):
+        if not self.exists():
             raise ValueError('user does not exist')
-        if user['password'] != hash_password(old_password):
+        if self.get_password() != hash_password(old_password):
             raise ValueError('Wrong old password')
+        self.password = new_password
         self.update_password()
 
     def update(self, field: str):
         return user_coll.update({'id': self.id}, {'$set': {field: self.__dict__[field]}})
 
     def add_total_score(self, score: int):
-        if self.get() is None:
+        if not self.exists():
             raise ValueError('user does not exist')
         return user_coll.update({'id': self.id}, {'$inc': {'total_score': score}})
 
@@ -58,3 +58,9 @@ class User:
 
     def get_api(self):
         return user_coll.find_one({'id': self.id}, {'_id': 0, 'password': 0})
+
+    def exists(self):
+        return not self.get() is None
+
+    def get_password(self):
+        return user_coll.find_one({'id': self.id}, {'_id': 0, 'password': 1})['password']
