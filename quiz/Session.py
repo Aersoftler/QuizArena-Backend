@@ -6,8 +6,8 @@ from database.database import session_coll
 from quiz.Category import Category
 from quiz.Question import Question
 from quizarena_utils import hash_password
-from user.User import User
 from shared.Messages import Errors as err
+from user.User import User
 
 
 class Session:
@@ -27,7 +27,7 @@ class Session:
 
     def create(self):
         category = Category(self.category)
-        if category.get() is None:
+        if not category.exist():
             raise ValueError(err.NO_MATCHING_CATEGORY)
         if type(self.deadline) is not datetime:
             raise TypeError(err.TYPE_MISMATCH)
