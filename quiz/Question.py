@@ -7,8 +7,7 @@ from quiz.Category import Category
 
 class Question:
 
-    def __init__(self, _id: ObjectId = None, question: str = None, answers: Answers = None,
-                 category: str = 'default'):
+    def __init__(self, _id: ObjectId = None, question: str = None, answers: Answers = None, category: str = 'default'):
         self._id = _id
         self.question = question
         self.answers = answers

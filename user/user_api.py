@@ -3,6 +3,8 @@ from flask import Blueprint, request
 from pymongo import errors
 
 from user.User import User
+from shared.Messages import Messages as msg
+from shared.Messages import Errors as err
 
 user_app = Blueprint('user_app', __name__)
 
@@ -21,21 +23,21 @@ def patch_user(user):
                 .update_password_api(request.form['old_password'])
         except ValueError as e:
             return e.args[0], 400
-        return 'Password successfully changed', 200
+        return msg.PW_CHANGED_SUCCESS, 200
     elif request.args['update'] == 'display_name':
         try:
             User(user, display_name=request.form['display_name']).update_display_name()
         except ValueError as e:
             return e.args[0], 400
-        return 'display_name successfully changed', 200
+        return msg.DISPLAY_NAME_CHANGED_SUCCESS, 200
     elif request.args['update'] == 'total_score':
         try:
             User(user).add_total_score(int(request.form['score']))
         except ValueError as e:
             return e.args[0], 400
-        return 'score successfully added to total-score', 200
+        return msg.SCORE_ADDED_SUCCESS, 200
     else:
-        return 'no valid update-parameter', 400
+        return err.NO_VALID_UPDATE_PARAM, 400
 
 
 @user_app.route('/user/<user>', methods=['POST'])
@@ -46,4 +48,4 @@ def post_user(user):
         return e.args[0], 400
     except errors.DuplicateKeyError as e:
         return e.args[0], 400
-    return 'user successfully registered', 200
+    return msg.USER_REGISTERED_SUCCESS, 200

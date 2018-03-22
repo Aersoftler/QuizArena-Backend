@@ -7,6 +7,7 @@ from quiz.Category import Category
 from quiz.Question import Question
 from quizarena_utils import hash_password
 from user.User import User
+from shared.Messages import Errors as err
 
 
 class Session:
@@ -27,14 +28,14 @@ class Session:
     def create(self):
         category = Category(self.category)
         if category.get() is None:
-            raise ValueError('no matching category found')
+            raise ValueError(err.NO_MATCHING_CATEGORY)
         if type(self.deadline) is not datetime:
-            raise TypeError('deadline is not a datetime')
+            raise TypeError(err.TYPE_MISMATCH)
         if len(self.questions) >= 11:
-            raise ValueError('To many questions assigned')
+            raise ValueError(err.TOO_MANY_QUESTIONS)
         if self.private is True:
             if self.password is None:
-                raise ValueError('Cannot create a private session without password ')
+                raise ValueError(err.NO_PW_FOR_PRIVATE_SESSION)
             self.__create_password()
         self.questions = category.get_random_questions()
         db_dict = self.__dict__
@@ -46,15 +47,15 @@ class Session:
 
     def add_user(self, user: User, password: str = ''):
         if user.get() is None:
-            raise ValueError('User cannot be found in database')
+            raise ValueError(err.USER_NOT_FOUND)
         self.get_private_settings()
         if self.private and self.password != hash_password(password):
-            raise PermissionError('wrong password for private Session')
+            raise PermissionError(err.PW)
         return session_coll.update_one({'name': self.name}, {'$push': {'users': {'user': user.id, 'score': 0}}})
 
     def set_users_score(self, user: User, score: int):
         if user.get() is None:
-            raise ValueError('User cannot be found in database')
+            raise ValueError(err.USER_NOT_FOUND)
         return session_coll.update_one(
             {'$and': [{'name': self.name}, {'users.user': user.id}]},
             {'$set': {'users.$.score': score}}

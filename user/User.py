@@ -1,5 +1,6 @@
 from database.database import user_coll
 from quizarena_utils import hash_password
+from shared.Messages import Errors as err
 
 
 class User:
@@ -13,7 +14,7 @@ class User:
 
     def register(self):
         if self.password is None:
-            raise ValueError('Cannot register user without password')
+            raise ValueError(err.NO_PW)
         self.__create_password()
         db_dict = self.__dict__
         del db_dict['password_hashed']
@@ -21,23 +22,23 @@ class User:
 
     def update_display_name(self):
         if self.display_name is None:
-            raise ValueError('display_name cannot be None')
+            raise ValueError(err.NO_DISPLAY_NAME)
         if self.get() is None:
-            raise ValueError('user does not exist')
+            raise ValueError(err.NOT_EXISTING_USER)
         return self.update('display_name')
 
     def update_password(self):
         if self.password is None:
-            raise ValueError('Password cannot be None')
+            raise ValueError(err.NO_PW)
         self.__create_password()
         return self.update('password')
 
     def update_password_api(self, old_password: str):
         user = self.get()
         if user is None:
-            raise ValueError('user does not exist')
+            raise ValueError(err.NOT_EXISTING_USER)
         if user['password'] != hash_password(old_password):
-            raise ValueError('Wrong old password')
+            raise ValueError(err.OLD_PW_MISMATCH)
         self.update_password()
 
     def update(self, field: str):
@@ -45,7 +46,7 @@ class User:
 
     def add_total_score(self, score: int):
         if self.get() is None:
-            raise ValueError('user does not exist')
+            raise ValueError(err.NOT_EXISTING_USER)
         return user_coll.update({'id': self.id}, {'$inc': {'total_score': score}})
 
     def __create_password(self):

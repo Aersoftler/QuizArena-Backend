@@ -5,6 +5,8 @@ from flask import Blueprint, request
 
 from quiz.Session import Session
 from user.User import User
+from shared.Messages import Messages as msg
+from shared.Messages import Errors as err
 
 session_app = Blueprint('session_app', __name__)
 
@@ -27,7 +29,7 @@ def patch_session(name):
             Session(name).add_user(User(request.form['user']), request.form['password'])
         except PermissionError as e:
             return e.args[0], 403
-        return 'user successfully added', 200
+        return msg.USER_ADDED_SUCCESS, 200
     elif request.args['update'] == 'set-score':
         user = User(request.form['user'])
         score = int(request.form['score'])
@@ -39,9 +41,9 @@ def patch_session(name):
         #     user.add_total_score(score)
         # except ValueError as e:
         #     return e.args[0], 400
-        return 'score successfully set', 200
+        return msg.SCORE_SET_SUCCESS, 200
     else:
-        return 'no valid update-parameter', 400
+        return err.NO_VALID_UPDATE_PARAM, 400
 
 
 @session_app.route('/session/<name>', methods=['POST'])
@@ -54,4 +56,4 @@ def post_session(name):
                 deadline=datetime.now() + timedelta(hours=int(request.form['run-time']))).create()
     except ValueError as e:
         return e.args[0], 400
-    return 'session successfully created', 200
+    return msg.SESSION_CREATED_SUCCESS, 200
