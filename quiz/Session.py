@@ -46,12 +46,16 @@ class Session:
         return session_coll.delete_one({'name': self.name})
 
     def add_user(self, user: User, password: str = ''):
-        if user.get() is None:
+        if not user.exists():
             raise ValueError(err.USER_NOT_FOUND)
         self.get_private_settings()
         if self.private and self.password != hash_password(password):
             raise PermissionError(err.PW)
-        return session_coll.update_one({'name': self.name}, {'$push': {'users': {'user': user.id, 'score': 0}}})
+        self.get_users()
+        return session_coll.update_one(
+            {'name': self.name},
+        )
+            {'$push': {'users': {'user': user.id, 'score': 0, 'admin': len(self.users) < 1}}}
 
     def set_users_score(self, user: User, score: int):
         if user.get() is None:
@@ -90,6 +94,25 @@ class Session:
         self.password = settings['password']
         self.private = settings['private']
         return settings['password'], settings['private']
+
+    def get_users(self):
+        session = list(session_coll.find({'name': self.name}, {'_id': 0, 'users': 1}))[0]['users']
+        self.users = session
+        return session
+
+    def close_api(self, user: User):
+        if not user.exists():
+            raise ValueError('user does not exist')
+        is_admin = list(session_coll.find(
+            {'name': self.name},
+            {'_id': 0, 'users': {'$elemMatch': {'user': user.id}}}))[0]['users'][0]['admin']
+        if not is_admin:
+            raise PermissionError('user not permitted to close_api session')
+        self.close()
+        return user
+
+    def close(self):
+        session_coll.update_one({'name': self.name}, {'$set': {'closed': True}})
 
     @staticmethod
     def tidy_up_sessions():

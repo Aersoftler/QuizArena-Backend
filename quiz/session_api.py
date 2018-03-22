@@ -24,6 +24,7 @@ def get_session(name):
 
 @session_app.route('/session/<name>', methods=['PATCH'])
 def patch_session(name):
+    user = User(request.form['user'])
     if request.args['update'] == 'add-user':
         try:
             Session(name).add_user(User(request.form['user']), request.form['password'])
@@ -31,17 +32,25 @@ def patch_session(name):
             return e.args[0], 403
         return msg.USER_ADDED_SUCCESS, 200
     elif request.args['update'] == 'set-score':
-        user = User(request.form['user'])
         score = int(request.form['score'])
         try:
             Session(name).set_users_score(user, score)
         except ValueError as e:
             return e.args[0], 400
+        # add also to total score
         # try:
         #     user.add_total_score(score)
         # except ValueError as e:
         #     return e.args[0], 400
         return msg.SCORE_SET_SUCCESS, 200
+    elif request.args['update'] == 'close':
+        try:
+            Session(name).close_api(user)
+        except PermissionError as e:
+            return e.args[0], 403
+        except ValueError as e:
+            return e.args[0], 400
+        return 'session successfully closed', 200
     else:
         return err.NO_VALID_UPDATE_PARAM, 400
 

@@ -19,8 +19,7 @@ def get_user(user):
 def patch_user(user):
     if request.args['update'] == 'password':
         try:
-            User(user, password=request.form['new_password'])\
-                .update_password_api(request.form['old_password'])
+            User(user).update_password_api(request.form['new_password'], request.form['old_password'])
         except ValueError as e:
             return e.args[0], 400
         return msg.PW_CHANGED_SUCCESS, 200
