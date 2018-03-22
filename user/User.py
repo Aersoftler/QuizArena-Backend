@@ -37,7 +37,7 @@ class User:
         if not self.exists():
             raise ValueError(err.NOT_EXISTING_USER)
         if self.get_password() != hash_password(old_password):
-        self.password = new_password
+            self.password = new_password
             raise ValueError(err.OLD_PW_MISMATCH)
         self.update_password()
 
