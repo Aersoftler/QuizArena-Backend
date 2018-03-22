@@ -11,6 +11,7 @@ class Messages(Enum):
     USER_ADDED_SUCCESS = "user_added_success"
     SCORE_SET_SUCCESS = "score_set_success"
     SESSION_CREATED_SUCCESS = "session_created_success"
+    PERMISSION_DENIED = "permission_denied"
 
 
 class Errors(Enum):
@@ -27,3 +28,5 @@ class Errors(Enum):
     TOO_MANY_QUESTIONS = "too_many_questions"
     NO_PW_FOR_PRIVATE_SESSION = "no_pw_for_private_session"
     PW_MISMATCH = "pw_missmatch"
+    # QUESTION
+    ANSWER_COUNT_INVALID = "answer_count_invalid"

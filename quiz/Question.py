@@ -3,6 +3,7 @@ from bson import ObjectId
 from database.database import question_coll
 from quiz.Answers import Answers
 from quiz.Category import Category
+from shared.Messages import Errors as err
 
 
 class Question:
@@ -15,11 +16,11 @@ class Question:
 
     def add(self):
         if type(self.answers) is not dict:
-            raise TypeError('answers is not dict')
+            raise TypeError(err.TYPE_MISMATCH)
         if type(self.answers['wrong_answers']) is not list or len(self.answers['wrong_answers']) is not 3:
-            raise TypeError('wrong_answers have to be an array of 3 items')
+            raise TypeError(err.ANSWER_COUNT_INVALID)
         if Category(self.category).get() is None:
-            raise ValueError('no matching category found')
+            raise ValueError(err.NO_MATCHING_CATEGORY)
         question_dict = self.__dict__
         if self._id is None:
             del question_dict['_id']

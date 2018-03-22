@@ -50,12 +50,12 @@ class Session:
             raise ValueError(err.USER_NOT_FOUND)
         self.get_private_settings()
         if self.private and self.password != hash_password(password):
-            raise PermissionError(err.PW)
+            raise PermissionError(err.PW_MISMATCH)
         self.get_users()
         return session_coll.update_one(
             {'name': self.name},
-        )
             {'$push': {'users': {'user': user.id, 'score': 0, 'admin': len(self.users) < 1}}}
+        )
 
     def set_users_score(self, user: User, score: int):
         if user.get() is None:
@@ -102,12 +102,12 @@ class Session:
 
     def close_api(self, user: User):
         if not user.exists():
-            raise ValueError('user does not exist')
+            raise ValueError(err.NOT_EXISTING_USER)
         is_admin = list(session_coll.find(
             {'name': self.name},
             {'_id': 0, 'users': {'$elemMatch': {'user': user.id}}}))[0]['users'][0]['admin']
         if not is_admin:
-            raise PermissionError('user not permitted to close_api session')
+            raise PermissionError(err.PERMISSION_DENIED)
         self.close()
         return user
 
