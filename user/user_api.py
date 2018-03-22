@@ -2,9 +2,9 @@ import json
 from flask import Blueprint, request
 from pymongo import errors
 
-from user.User import User
-from shared.Messages import Messages as msg
 from shared.Messages import Errors as err
+from shared.Messages import Messages as msg
+from user.User import User
 
 user_app = Blueprint('user_app', __name__)
 
@@ -12,7 +12,7 @@ user_app = Blueprint('user_app', __name__)
 @user_app.route('/user/<user>', methods=['GET'])
 def get_user(user):
     user = User(user).get_api()
-    return json.dumps(user), 200 if user is not None else json.dumps(user), 404
+    return (json.dumps(user), 200) if user is not None else (json.dumps(user), 404)
 
 
 @user_app.route('/user/<user>', methods=['PATCH'])
