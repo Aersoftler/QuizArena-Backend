@@ -11,6 +11,12 @@ app.register_blueprint(user_app)
 app.register_blueprint(session_app)
 app.register_blueprint(category_app)
 
+
+@app.route('/', methods=['GET'])
+def get():
+    return 'App is running', 200
+
+
 if __name__ == '__main__':
     Thread(target=Session.tidy_up_sessions).start()
     app.run()
