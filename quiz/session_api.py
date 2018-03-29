@@ -16,25 +16,25 @@ def get_session_all():
     return json_util.dumps(Session.get_all_sessions()), 200
 
 
-@session_app.route('/session/<name>', methods=['GET'])
-def get_session(name):
-    session = Session(name).get()
+@session_app.route('/session/<_id>', methods=['GET'])
+def get_session(_id):
+    session = Session(_id).get()
     return (json_util.dumps(session), 200) if len(session) > 0 else (json.dumps(None), 404)
 
 
-@session_app.route('/session/<name>', methods=['PATCH'])
-def patch_session(name):
+@session_app.route('/session/<_id>', methods=['PATCH'])
+def patch_session(_id):
     user = User(request.form['user'])
     if request.args['update'] == 'add-user':
         try:
-            Session(name).add_user(User(request.form['user']), request.form['password'])
+            Session(_id).add_user(User(request.form['user']), request.form['password'])
         except PermissionError as e:
             return e.args[0], 403
         return msg.USER_ADDED_SUCCESS, 200
     elif request.args['update'] == 'set-score':
         score = int(request.form['score'])
         try:
-            Session(name).set_users_score(user, score)
+            Session(_id).set_users_score(user, score)
         except ValueError as e:
             return e.args[0], 400
         # add also to total score
@@ -45,7 +45,7 @@ def patch_session(name):
         return msg.SCORE_SET_SUCCESS, 200
     elif request.args['update'] == 'close':
         try:
-            Session(name).close_api(user)
+            Session(_id).close_api(user)
         except PermissionError as e:
             return e.args[0], 403
         except ValueError as e:
@@ -58,7 +58,7 @@ def patch_session(name):
 @session_app.route('/session/<name>', methods=['POST'])
 def post_session(name):
     try:
-        Session(name,
+        Session(name=name,
                 category=request.form['category'],
                 private=json.loads(request.form['private']),
                 password=request.form['password'],
