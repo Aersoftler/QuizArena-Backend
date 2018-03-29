@@ -21,3 +21,7 @@ class Category:
 
     def exist(self):
         return not self.get() is None
+
+    @staticmethod
+    def get_all_categories():
+        return list(category_coll.find({}, {'_id': 0}))
