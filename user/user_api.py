@@ -1,4 +1,5 @@
 import json
+
 from flask import Blueprint, request
 from pymongo import errors
 
@@ -22,21 +23,21 @@ def patch_user(user):
             User(user).update_password_api(request.form['new_password'], request.form['old_password'])
         except ValueError as e:
             return e.args[0], 400
-        return msg.PW_CHANGED_SUCCESS, 200
+        return msg.PW_CHANGED_SUCCESS.value, 200
     elif request.args['update'] == 'display_name':
         try:
             User(user, display_name=request.form['display_name']).update_display_name()
         except ValueError as e:
             return e.args[0], 400
-        return msg.DISPLAY_NAME_CHANGED_SUCCESS, 200
+        return msg.DISPLAY_NAME_CHANGED_SUCCESS.value, 200
     elif request.args['update'] == 'total_score':
         try:
             User(user).add_total_score(int(request.form['score']))
         except ValueError as e:
             return e.args[0], 400
-        return msg.SCORE_ADDED_SUCCESS, 200
+        return msg.SCORE_ADDED_SUCCESS.value, 200
     else:
-        return err.NO_VALID_UPDATE_PARAM, 400
+        return err.NO_VALID_UPDATE_PARAM.value, 400
 
 
 @user_app.route('/user/<user>', methods=['POST'])
@@ -47,4 +48,4 @@ def post_user(user):
         return e.args[0], 400
     except errors.DuplicateKeyError as e:
         return e.args[0], 400
-    return msg.USER_REGISTERED_SUCCESS, 200
+    return msg.USER_REGISTERED_SUCCESS.value, 200

@@ -1,12 +1,12 @@
 import json
-from bson import json_util
 from datetime import datetime, timedelta
+
+from bson import json_util
 from flask import Blueprint, request
 
 from quiz.Session import Session
+from shared.Messages import Messages, Errors
 from user.User import User
-from shared.Messages import Messages as msg
-from shared.Messages import Errors as err
 
 session_app = Blueprint('session_app', __name__)
 
@@ -30,7 +30,7 @@ def patch_session(_id):
             Session(_id).add_user(User(request.form['user']), request.form['password'])
         except PermissionError as e:
             return e.args[0], 403
-        return msg.USER_ADDED_SUCCESS, 200
+        return Messages.USER_ADDED_SUCCESS.value, 200
     elif request.args['update'] == 'set-score':
         score = int(request.form['score'])
         try:
@@ -42,7 +42,7 @@ def patch_session(_id):
         #     user.add_total_score(score)
         # except ValueError as e:
         #     return e.args[0], 400
-        return msg.SCORE_SET_SUCCESS, 200
+        return Messages.SCORE_SET_SUCCESS.value, 200
     elif request.args['update'] == 'close':
         try:
             Session(_id).close_api(user)
@@ -52,7 +52,7 @@ def patch_session(_id):
             return e.args[0], 400
         return 'session successfully closed', 200
     else:
-        return err.NO_VALID_UPDATE_PARAM, 400
+        return Errors.NO_VALID_UPDATE_PARAM.value, 400
 
 
 @session_app.route('/session/<name>', methods=['POST'])
@@ -65,4 +65,4 @@ def post_session(name):
                 deadline=datetime.now() + timedelta(hours=int(request.form['run-time']))).create()
     except ValueError as e:
         return e.args[0], 400
-    return msg.SESSION_CREATED_SUCCESS, 200
+    return Messages.SESSION_CREATED_SUCCESS.value, 200

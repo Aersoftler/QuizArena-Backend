@@ -12,9 +12,9 @@ category_app = Blueprint('category_app', __name__)
 def post_category(category):
     try:
         Category(category).add()
-    except errors.DuplicateKeyError as e:
-        return Errors.CATEGORY_ALREADY_EXISTS, 400
-    return Messages.CATEGORY_ADDED_SUCCESS, 200
+    except errors.DuplicateKeyError:
+        return Errors.CATEGORY_ALREADY_EXISTS.value, 400
+    return Messages.CATEGORY_ADDED_SUCCESS.value, 200
 
 
 @category_app.route('/category', methods=['GET'])

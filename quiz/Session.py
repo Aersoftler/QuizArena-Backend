@@ -34,14 +34,14 @@ class Session:
     def create(self):
         category = Category(self.category)
         if not category.exist():
-            raise ValueError(err.NO_MATCHING_CATEGORY)
+            raise ValueError(err.NO_MATCHING_CATEGORY.value)
         if type(self.deadline) is not datetime:
-            raise TypeError(err.TYPE_MISMATCH)
+            raise TypeError(err.TYPE_MISMATCH.value)
         if len(self.questions) >= 11:
-            raise ValueError(err.TOO_MANY_QUESTIONS)
+            raise ValueError(err.TOO_MANY_QUESTIONS.value)
         if self.private is True:
             if self.password is None:
-                raise ValueError(err.NO_PW_FOR_PRIVATE_SESSION)
+                raise ValueError(err.NO_PW_FOR_PRIVATE_SESSION.value)
             self.__create_password()
         self.questions = category.get_random_questions()
         db_dict = self.__dict__
@@ -54,10 +54,10 @@ class Session:
 
     def add_user(self, user: User, password: str = ''):
         if not user.exists():
-            raise ValueError(err.USER_NOT_FOUND)
+            raise ValueError(err.USER_NOT_FOUND.value)
         self.get_private_settings()
         if self.private and self.password != hash_password(password):
-            raise PermissionError(err.PW_MISMATCH)
+            raise PermissionError(err.PW_MISMATCH.value)
         self.get_users()
         return session_coll.update_one(
             {primary_key: ObjectId(self.id)},
@@ -66,7 +66,7 @@ class Session:
 
     def set_users_score(self, user: User, score: int):
         if user.get() is None:
-            raise ValueError(err.USER_NOT_FOUND)
+            raise ValueError(err.USER_NOT_FOUND.value)
         return session_coll.update_one(
             {'$and': [{primary_key: ObjectId(self.id)}, {'users.user': user.id}]},
             {'$set': {'users.$.score': score}}
@@ -109,12 +109,12 @@ class Session:
 
     def close_api(self, user: User):
         if not user.exists():
-            raise ValueError(err.NOT_EXISTING_USER)
+            raise ValueError(err.NOT_EXISTING_USER.value)
         is_admin = list(session_coll.find(
             {primary_key: ObjectId(self.id)},
             {'_id': 0, 'users': {'$elemMatch': {'user': user.id}}}))[0]['users'][0]['admin']
         if not is_admin:
-            raise PermissionError(err.PERMISSION_DENIED)
+            raise PermissionError(err.PERMISSION_DENIED.value)
         self.close()
         return user
 

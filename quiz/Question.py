@@ -16,11 +16,11 @@ class Question:
 
     def add(self):
         if type(self.answers) is not dict:
-            raise TypeError(err.TYPE_MISMATCH)
+            raise TypeError(err.TYPE_MISMATCH.value)
         if type(self.answers['wrong_answers']) is not list or len(self.answers['wrong_answers']) is not 3:
-            raise TypeError(err.ANSWER_COUNT_INVALID)
+            raise TypeError(err.ANSWER_COUNT_INVALID.value)
         if Category(self.category).get() is None:
-            raise ValueError(err.NO_MATCHING_CATEGORY)
+            raise ValueError(err.NO_MATCHING_CATEGORY.value)
         question_dict = self.__dict__
         if self._id is None:
             del question_dict['_id']
