@@ -3,6 +3,7 @@ from time import sleep
 from typing import List
 
 from bson import ObjectId
+from pyfcm import FCMNotification
 
 from database.database import session_coll
 from quiz.Category import Category
@@ -12,11 +13,13 @@ from shared.Messages import Errors as err
 from user.User import User
 
 primary_key = '_id'
+push_service = FCMNotification(api_key='AAAAtykNlQg:APA91bGFbSDWTGIeTtJdxX3a-jQ0TD94SJ9Od6aP8evC_INmjjo84_ZB65kvXjGADOI'
+                                       'z0hhilEY3e0IdB5zZDUi6xUpv8Byg3cHbxKlswgMpUqFDk-w2UUG5MizQlEsWWo91gpFu5ZpO')
 
 
 class Session:
 
-    def __init__(self, session_id: str = None, name: str = 'default', category: str = 'Allgemeinwissen', private: bool = False,
+    def __init__(self, session_id: str = None, name: str = '', category: str = 'Allgemeinwissen', private: bool = False,
                  password: str = None, questions: List[Question] = list(),
                  deadline: datetime = datetime.now() + timedelta(days=1), users: List[str] = list(),
                  closed: bool = False):
@@ -107,6 +110,10 @@ class Session:
         self.users = session
         return session
 
+    def get_users_names(self):
+        users = list(session_coll.find({primary_key: ObjectId(self.id)}, {'users.user': 1, primary_key: 0}))[0]['users']
+        return [user['user'] for user in users]
+
     def close_api(self, user: User):
         if not user.exists():
             raise ValueError(err.NOT_EXISTING_USER.value)
@@ -118,7 +125,18 @@ class Session:
         self.close()
         return user
 
+    def set_db_name(self):
+        self.name = self.name if self.name != '' else \
+            list(session_coll.find_one({primary_key: ObjectId(self.id)}, {primary_key: 0, 'name': 1}))[0]
+
     def close(self):
+        self.set_db_name()
+        device_ids = self.get_users_names()
+        messsage_title = self.name + ' wurde beendet!'
+        message_body = 'Die Quizarena ' + self.name + ' ist beendet worden. Siehe dir die Ergebnisse an :)'
+        push_result = push_service.notify_multiple_devices(registration_ids=device_ids,
+                                                           message_title=messsage_title,
+                                                           message_body=message_body)
         session_coll.update_one({primary_key: ObjectId(self.id)}, {'$set': {'closed': True}})
 
     @staticmethod
