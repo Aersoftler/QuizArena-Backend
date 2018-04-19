@@ -13,8 +13,7 @@ from shared.Messages import Errors as err
 from user.User import User
 
 primary_key = '_id'
-push_service = FCMNotification(api_key='AAAAtykNlQg:APA91bGFbSDWTGIeTtJdxX3a-jQ0TD94SJ9Od6aP8evC_INmjjo84_ZB65kvXjGADOI'
-                                       'z0hhilEY3e0IdB5zZDUi6xUpv8Byg3cHbxKlswgMpUqFDk-w2UUG5MizQlEsWWo91gpFu5ZpO')
+push_service = FCMNotification(api_key='hier_der_api_key')
 
 
 class Session:
