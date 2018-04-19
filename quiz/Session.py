@@ -10,10 +10,11 @@ from quiz.Category import Category
 from quiz.Question import Question
 from quizarena_utils import hash_password
 from shared.Messages import Errors as err
+from shared.read_credentials import api_key
 from user.User import User
 
 primary_key = '_id'
-push_service = FCMNotification(api_key='hier_der_api_key')
+push_service = FCMNotification(api_key=api_key)
 
 
 class Session:

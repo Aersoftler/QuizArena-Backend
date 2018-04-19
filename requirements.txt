@@ -1,3 +1,4 @@
+PyYAML
 pyfcm
 pymongo
 flask
