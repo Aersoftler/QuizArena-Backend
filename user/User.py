@@ -7,11 +7,13 @@ from shared.Messages import Errors
 
 class User:
 
-    def __init__(self, user_id: str, display_name: str = None, password: str = None, total_score: int = 0):
+    def __init__(self, user_id: str, display_name: str = None, password: str = None, total_score: int = 0,
+                 token: str = None):
         self.id = user_id
         self.display_name = display_name if display_name is not None else user_id
         self.password = password
         self.total_score = total_score
+        self.token = token
         self.password_hashed = False
 
     def register(self):
@@ -38,8 +40,7 @@ class User:
         return self.update('password')
 
     def update_password_api(self, new_password: str, old_password: str):
-        if not self.exists():
-            raise ValueError(Errors.NOT_EXISTING_USER.value)
+        self.exists_checking()
         if self.get_password() != hash_password(old_password):
             self.password = new_password
             raise ValueError(Errors.OLD_PW_MISMATCH.value)
@@ -49,8 +50,7 @@ class User:
         return user_coll.update({'id': self.id}, {'$set': {field: self.__dict__[field]}})
 
     def add_total_score(self, score: int):
-        if not self.exists():
-            raise ValueError(Errors.NOT_EXISTING_USER.value)
+        self.exists_checking()
         return user_coll.update({'id': self.id}, {'$inc': {'total_score': score}})
 
     def __create_password(self):
@@ -62,10 +62,37 @@ class User:
         return user_coll.find_one({'id': self.id})
 
     def get_api(self):
-        return user_coll.find_one({'id': self.id}, {'_id': 0, 'password': 0})
+        return user_coll.find_one({'id': self.id}, {'_id': 0, 'password': 0, 'token': 0})
 
     def exists(self):
         return not self.get() is None
 
     def get_password(self):
-        return user_coll.find_one({'id': self.id}, {'_id': 0, 'password': 1})['password']
+        return self.get_attribute('password')
+
+    def login(self):
+        self.exists_checking()
+        self.__create_password()
+        if self.password != self.get_password():
+            raise PermissionError(Errors.PW_MISMATCH.value)
+        return user_coll.update({'id': self.id}, {'$set': {'token': self.token}})
+
+    def logout(self):
+        self.exists_checking()
+        return user_coll.update({'id': self.id}, {'$set': {'token': None}})
+
+    def exists_checking(self):
+        if not self.exists():
+            raise ValueError(Errors.NOT_EXISTING_USER.value)
+
+    def get_token(self):
+        return self.get_attribute('token')
+
+    def get_attribute(self, attribute: str):
+        return user_coll.find_one({'id': self.id}, {'_id': 0, attribute: 1})[attribute]
+
+    def check_user_token(self):
+        self.exists_checking()
+        if self.get_token() != self.token:
+            raise PermissionError(Errors.USER_TOKEN_NOT_CORRECT.value)
+        return True

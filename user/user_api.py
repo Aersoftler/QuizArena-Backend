@@ -43,9 +43,40 @@ def patch_user(user):
 @user_app.route('/user/<user>', methods=['POST'])
 def post_user(user):
     try:
-        User(user, password=request.form['password']).register()
+        User(user, password=request.form['password'], token=request.form['token']).register()
     except ValueError as e:
         return e.args[0], 400
     except errors.DuplicateKeyError as e:
         return e.args[0], 400
     return msg.USER_REGISTERED_SUCCESS.value, 200
+
+
+@user_app.route('/user/<user>/login', methods=['PATCH'])
+def patch_login_user(user):
+    try:
+        User(user, password=request.form['password'], token=request.form['token']).login()
+    except PermissionError as e:
+        return e.args[0], 401
+    except ValueError as e:
+        return e.args[0], 400
+    return msg.USER_LOGIN_SUCCESS.value, 200
+
+
+@user_app.route('/user/<user>/logout', methods=['PATCH'])
+def patch_logout_user(user):
+    try:
+        User(user).logout()
+    except ValueError as e:
+        return e.args[0], 400
+    return msg.USER_LOGOUT_SUCCESS.value, 200
+
+
+@user_app.route('/user/<user>/<token>', methods=['GET'])
+def check_user_token(user, token):
+    try:
+        User(user, token=token).check_user_token()
+    except PermissionError as e:
+        return e.args[0], 401
+    except ValueError as e:
+        return e.args[0], 400
+    return msg.USER_TOKEN_CORRECT.value, 200
