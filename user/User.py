@@ -1,6 +1,8 @@
+from pymongo import errors
+
 from database.database import user_coll
 from quizarena_utils import hash_password
-from shared.Messages import Errors as err
+from shared.Messages import Errors
 
 
 class User:
@@ -13,8 +15,10 @@ class User:
         self.password_hashed = False
 
     def register(self):
+        if self.exists():
+            raise errors.DuplicateKeyError(Errors.USER_ALREAFY_EXISTING.value)
         if self.password is None:
-            raise ValueError(err.NO_PW.value)
+            raise ValueError(Errors.NO_PW.value)
         self.__create_password()
         db_dict = self.__dict__
         del db_dict['password_hashed']
@@ -22,23 +26,23 @@ class User:
 
     def update_display_name(self):
         if self.display_name is None:
-            raise ValueError(err.NO_DISPLAY_NAME.value)
+            raise ValueError(Errors.NO_DISPLAY_NAME.value)
         if self.get() is None:
-            raise ValueError(err.NOT_EXISTING_USER.value)
+            raise ValueError(Errors.NOT_EXISTING_USER.value)
         return self.update('display_name')
 
     def update_password(self):
         if self.password is None:
-            raise ValueError(err.NO_PW.value)
+            raise ValueError(Errors.NO_PW.value)
         self.__create_password()
         return self.update('password')
 
     def update_password_api(self, new_password: str, old_password: str):
         if not self.exists():
-            raise ValueError(err.NOT_EXISTING_USER.value)
+            raise ValueError(Errors.NOT_EXISTING_USER.value)
         if self.get_password() != hash_password(old_password):
             self.password = new_password
-            raise ValueError(err.OLD_PW_MISMATCH.value)
+            raise ValueError(Errors.OLD_PW_MISMATCH.value)
         self.update_password()
 
     def update(self, field: str):
@@ -46,7 +50,7 @@ class User:
 
     def add_total_score(self, score: int):
         if not self.exists():
-            raise ValueError(err.NOT_EXISTING_USER.value)
+            raise ValueError(Errors.NOT_EXISTING_USER.value)
         return user_coll.update({'id': self.id}, {'$inc': {'total_score': score}})
 
     def __create_password(self):

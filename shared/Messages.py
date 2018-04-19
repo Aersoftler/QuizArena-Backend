@@ -22,6 +22,7 @@ class Errors(Enum):
     NO_PW = 'no_pw'
     OLD_PW_MISMATCH = 'old_pw_missmatch'
     NO_VALID_UPDATE_PARAM = 'no_valid_update_param'
+    USER_ALREAFY_EXISTING = 'user_already_existing'
     # SESSION
     USER_NOT_FOUND = 'user_not_found'
     NO_MATCHING_CATEGORY = 'no_matching_categroy'
