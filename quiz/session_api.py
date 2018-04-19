@@ -16,6 +16,11 @@ def get_session_all():
     return json_util.dumps(Session.get_all_sessions()), 200
 
 
+@session_app.route('/session/by_user/<user>', methods=['GET'])
+def get_session_by_user(user):
+    return json_util.dumps(Session.get_session_for_user(user)), 200
+
+
 @session_app.route('/session/<_id>', methods=['GET'])
 def get_session(_id):
     session = Session(_id).get()
@@ -59,7 +64,8 @@ def post_session(name):
                 category=request.form['category'],
                 private=json.loads(request.form['private']),
                 password=request.form['password'],
-                deadline=datetime.now() + timedelta(hours=int(request.form['run-time']))).create()
+                deadline=datetime.now() + timedelta(hours=int(request.form['run-time'])),
+                admin=request.form['user']).create()
     except ValueError as e:
         return e.args[0], 400
     return Messages.SESSION_CREATED_SUCCESS.value, 200

@@ -22,7 +22,7 @@ class Session:
     def __init__(self, session_id: str = None, name: str = '', category: str = 'Allgemeinwissen', private: bool = False,
                  password: str = None, questions: List[Question] = list(),
                  deadline: datetime = datetime.now() + timedelta(days=1), users: List[str] = list(),
-                 closed: bool = False):
+                 closed: bool = False, admin: str = None):
         self.name = name
         self.category = category
         self.private = private
@@ -33,6 +33,7 @@ class Session:
         self.closed = closed
         self.password_hashed = False
         self.id = session_id
+        self.admin = admin
 
     def create(self):
         category = Category(self.category)
@@ -61,10 +62,9 @@ class Session:
         self.get_private_settings()
         if self.private and self.password != hash_password(password):
             raise PermissionError(err.PW_MISMATCH.value)
-        self.get_users()
         return session_coll.update_one(
             {primary_key: ObjectId(self.id)},
-            {'$push': {'users': {'user': user.id, 'score': 0, 'admin': len(self.users) < 1}}}
+            {'$push': {'users': {'user': user.id, 'score': 0}}}
         )
 
     def set_users_score(self, user: User, score: int):
@@ -149,3 +149,13 @@ class Session:
     @staticmethod
     def get_all_sessions():
         return list(session_coll.find({}, {'_id': 0, 'password': 0, 'questions': 0}))
+
+    @staticmethod
+    def get_session_for_user(user: str):
+        return {
+            'sessions_i_participate':
+                list(session_coll.find({'users.user': user}, {'_id': 0, 'password': 0, 'questions': 0, 'users': 0})),
+            'sessions_to_participate':
+                list(session_coll.find({'users.user': {'$ne': user}, 'closed': False},
+                                       {'_id': 0, 'password': 0, 'questions': 0, 'admin': 0, 'users': 0}))
+        }
