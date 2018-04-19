@@ -33,15 +33,12 @@ def patch_session(_id):
         return Messages.USER_ADDED_SUCCESS.value, 200
     elif request.args['update'] == 'set-score':
         score = int(request.form['score'])
+        # add also to total score
         try:
             Session(_id).set_users_score(user, score)
+            user.add_total_score(score)
         except ValueError as e:
             return e.args[0], 400
-        # add also to total score
-        # try:
-        #     user.add_total_score(score)
-        # except ValueError as e:
-        #     return e.args[0], 400
         return Messages.SCORE_SET_SUCCESS.value, 200
     elif request.args['update'] == 'close':
         try:
