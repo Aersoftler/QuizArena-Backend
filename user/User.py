@@ -1,3 +1,5 @@
+from typing import List
+
 from pymongo import errors
 
 from database.database import user_coll
@@ -96,3 +98,8 @@ class User:
         if self.get_token() != self.token:
             raise PermissionError(Errors.USER_TOKEN_NOT_CORRECT.value)
         return True
+
+    @staticmethod
+    def get_device_tokes_by_user_list(users: List[str]):
+        tokens = list(user_coll.find({'id': {'$in': users}}, {'_id': 0, 'token': 1}))
+        return [token['token'] for token in tokens]
