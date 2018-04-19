@@ -12,7 +12,7 @@ class User:
     def __init__(self, user_id: str, display_name: str = None, password: str = None, total_score: int = 0,
                  token: str = None):
         self.id = user_id
-        self.display_name = display_name if display_name is not None else user_id
+        self.display_name = display_name
         self.password = password
         self.total_score = total_score
         self.token = token

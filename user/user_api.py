@@ -43,7 +43,9 @@ def patch_user(user):
 @user_app.route('/user/<user>', methods=['POST'])
 def post_user(user):
     try:
-        User(user, password=request.form['password'], token=request.form['token']).register()
+        User(user, password=request.form['password'], token=request.form['token'],
+             display_name=request.form['display_name'])\
+            .register()
     except ValueError as e:
         return e.args[0], 400
     except errors.DuplicateKeyError as e:
