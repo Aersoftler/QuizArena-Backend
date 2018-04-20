@@ -1,5 +1,7 @@
-from flask import Flask
 from threading import Thread
+
+from flask import Flask
+from flask_sslify import SSLify
 
 from quiz.Session import Session
 from quiz.category_api import category_app
@@ -10,6 +12,8 @@ app = Flask(__name__)
 app.register_blueprint(user_app)
 app.register_blueprint(session_app)
 app.register_blueprint(category_app)
+
+SSLify(app, permanent=True)
 
 
 @app.route('/', methods=['GET'])
