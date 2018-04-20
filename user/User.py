@@ -3,8 +3,8 @@ from typing import List
 from pymongo import errors
 
 from database.database import user_coll
-from quizarena_utils import hash_password
 from shared.Messages import Errors
+from shared.hash_password import hash_password
 
 
 class User:

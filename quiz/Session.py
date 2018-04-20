@@ -8,8 +8,8 @@ from pyfcm import FCMNotification
 from database.database import session_coll
 from quiz.Category import Category
 from quiz.Question import Question
-from quizarena_utils import hash_password
 from shared.Messages import Errors as err
+from shared.hash_password import hash_password
 from shared.read_credentials import api_key
 from user.User import User
 
