@@ -44,8 +44,8 @@ class User:
     def update_password_api(self, new_password: str, old_password: str):
         self.exists_checking()
         if self.get_password() != hash_password(old_password):
-            self.password = new_password
             raise ValueError(Errors.OLD_PW_MISMATCH.value)
+        self.password = new_password
         self.update_password()
 
     def update(self, field: str):
