@@ -1,10 +1,10 @@
 import json
 from datetime import datetime, timedelta
 
-from bson import json_util
 from flask import Blueprint, request
 
 from quiz.Session import Session
+from shared.JSONEncoder import JSONEncoder
 from shared.Messages import Messages, Errors
 from user.User import User
 
@@ -13,18 +13,18 @@ session_app = Blueprint('session_app', __name__)
 
 @session_app.route('/session', methods=['GET'])
 def get_session_all():
-    return json_util.dumps(Session.get_all_sessions()), 200
+    return JSONEncoder().encode(Session.get_all_sessions()), 200
 
 
 @session_app.route('/session/by_user/<user>', methods=['GET'])
 def get_session_by_user(user):
-    return json_util.dumps(Session.get_session_for_user(user)), 200
+    return JSONEncoder().encode(Session.get_session_for_user(user)), 200
 
 
 @session_app.route('/session/<_id>', methods=['GET'])
 def get_session(_id):
     session = Session(_id).get()
-    return (json_util.dumps(session), 200) if len(session) > 0 else (json.dumps(None), 404)
+    return (JSONEncoder().encode(session), 200) if len(session) > 0 else (json.dumps(None), 404)
 
 
 @session_app.route('/session/<_id>', methods=['PATCH'])

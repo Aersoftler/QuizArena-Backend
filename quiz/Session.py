@@ -149,7 +149,7 @@ class Session:
 
     @staticmethod
     def get_all_sessions():
-        return list(session_coll.find({}, {'_id': 0, 'password': 0, 'questions': 0}))
+        return list(session_coll.find({}, {'password': 0, 'questions': 0}))
 
     @staticmethod
     def get_session_for_user(user: str):
