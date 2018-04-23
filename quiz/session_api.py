@@ -59,12 +59,12 @@ def patch_session(_id):
 @session_app.route('/session/<name>', methods=['POST'])
 def post_session(name):
     try:
-        Session(name=name,
-                category=request.form['category'],
-                private=json.loads(request.form['private']),
-                password=request.form['password'],
-                deadline=datetime.now() + timedelta(hours=int(request.form['run-time'])),
-                admin=request.form['user']).create()
+        session_create_result = Session(name=name,
+                                        category=request.form['category'],
+                                        private=json.loads(request.form['private']),
+                                        password=request.form['password'],
+                                        deadline=datetime.now() + timedelta(hours=int(request.form['run-time'])),
+                                        admin=request.form['user']).create()
     except ValueError as e:
         return e.args[0], 400
-    return Messages.SESSION_CREATED_SUCCESS.value, 200
+    return str(session_create_result), 200
