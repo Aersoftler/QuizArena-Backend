@@ -155,8 +155,8 @@ class Session:
     def get_session_for_user(user: str):
         return {
             'sessions_i_participate':
-                list(session_coll.find({'users.user': user}, {'_id': 0, 'password': 0, 'questions': 0, 'users': 0})),
+                list(session_coll.find({'users.user': user}, {'password': 0, 'questions': 0, 'users': 0})),
             'sessions_to_participate':
                 list(session_coll.find({'users.user': {'$ne': user}, 'closed': False},
-                                       {'_id': 0, 'password': 0, 'questions': 0, 'admin': 0, 'users': 0}))
+                                       {'password': 0, 'questions': 0, 'admin': 0, 'users': 0}))
         }
