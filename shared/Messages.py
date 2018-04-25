@@ -34,6 +34,7 @@ class Errors(Enum):
     TOO_MANY_QUESTIONS = 'too_many_questions'
     NO_PW_FOR_PRIVATE_SESSION = 'no_pw_for_private_session'
     PERMISSION_DENIED = 'permission_denied'
+    SESSION_ALREADY_CLOSED = 'session_already_closed'
     # QUESTION
     ANSWER_COUNT_INVALID = 'answer_count_invalid'
     # CATEGORY

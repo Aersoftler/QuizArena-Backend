@@ -35,6 +35,8 @@ def patch_session(_id):
             Session(_id).add_user(User(request.form['user']), request.form['password'])
         except PermissionError as e:
             return e.args[0], 403
+        except ValueError as e:
+            return e.args[0], 400
         return Messages.USER_ADDED_SUCCESS.value, 200
     elif request.args['update'] == 'set-score':
         score = int(request.form['score'])

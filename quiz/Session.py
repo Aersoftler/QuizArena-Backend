@@ -59,7 +59,9 @@ class Session:
     def add_user(self, user: User, password: str = ''):
         if not user.exists():
             raise ValueError(err.USER_NOT_FOUND.value)
-        self.get_private_settings()
+        self.get_information_to_add_user()
+        if self.closed:
+            raise ValueError(err.SESSION_ALREADY_CLOSED.value)
         if self.private and self.password != hash_password(password):
             raise PermissionError(err.PW_MISMATCH.value)
         return session_coll.update_one(
@@ -99,11 +101,13 @@ class Session:
         ]
         return list(session_coll.aggregate(pipeline))
 
-    def get_private_settings(self):
-        settings = list(session_coll.find({primary_key: ObjectId(self.id)}, {'_id': 0, 'password': 1, 'private': 1}))[0]
+    def get_information_to_add_user(self):
+        settings = list(session_coll.find({primary_key: ObjectId(self.id)},
+                                          {'_id': 0, 'password': 1, 'private': 1, 'closed': 1}))[0]
         self.password = settings['password']
         self.private = settings['private']
-        return settings['password'], settings['private']
+        self.closed = settings['closed']
+        return settings['password'], settings['private'], settings['closed']
 
     def get_users(self):
         session = list(session_coll.find({primary_key: ObjectId(self.id)}, {'_id': 0, 'users': 1}))[0]['users']
