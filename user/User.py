@@ -20,7 +20,7 @@ class User:
 
     def register(self):
         if self.exists():
-            raise errors.DuplicateKeyError(Errors.USER_ALREAFY_EXISTING.value)
+            raise errors.DuplicateKeyError(Errors.USER_ALREADY_EXISTING.value)
         if self.password is None:
             raise ValueError(Errors.NO_PW.value)
         self.__create_password()
