@@ -1,6 +1,7 @@
 from threading import Thread
 
 from flask import Flask, send_from_directory
+from flask_sslify import SSLify
 
 from quiz.Session import Session
 from quiz.category_api import category_app
