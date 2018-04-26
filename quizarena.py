@@ -27,5 +27,10 @@ def sharing(session_id):
     return send_from_directory('static', 'quizarena.html'), 200
 
 
+@app.route('/download')
+def download():
+    return send_from_directory('download', 'quizarena.apk'), 200
+
+
 if __name__ == '__main__':
     app.run()
