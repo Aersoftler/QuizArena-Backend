@@ -136,13 +136,19 @@ class Session:
         device_ids = self.get_device_tokens()
         messsage_title = self.name + ' wurde beendet!'
         message_body = 'Die Quizarena ' + self.name + ' ist beendet worden. Siehe dir die Ergebnisse an :)'
-        push_result = push_service.notify_multiple_devices(registration_ids=device_ids,
-                                                           message_title=messsage_title,
-                                                           message_body=message_body)
+        push_service.notify_multiple_devices(registration_ids=device_ids,
+                                             message_title=messsage_title,
+                                             message_body=message_body)
         session_coll.update_one({primary_key: ObjectId(self.id)}, {'$set': {'closed': True}})
 
     def get_device_tokens(self):
         return User.get_device_tokes_by_user_list(self.get_users_names())
+
+    def get_result(self):
+        users = self.get_users()
+        for i, user in enumerate(users):
+            users[i]['user'] = User(user['user']).get_display_name()
+        return users
 
     @staticmethod
     def tidy_up_sessions():

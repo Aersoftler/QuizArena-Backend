@@ -27,6 +27,12 @@ def get_session(_id):
     return (JSONEncoder().encode(session), 200) if len(session) > 0 else (json.dumps(None), 404)
 
 
+@session_app.route('/session/result/<_id>', methods=['GET'])
+def get_session_result(_id):
+    session = Session(_id).get_result()
+    return (JSONEncoder().encode(session), 200) if len(session) > 0 else (json.dumps(None), 404)
+
+
 @session_app.route('/session/<_id>', methods=['PATCH'])
 def patch_session(_id):
     user = User(request.form['user'])

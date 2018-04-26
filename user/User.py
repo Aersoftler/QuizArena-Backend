@@ -72,6 +72,9 @@ class User:
     def get_password(self):
         return self.get_attribute('password')
 
+    def get_display_name(self):
+        return self.get_attribute('display_name')
+
     def login(self):
         self.exists_checking()
         self.__create_password()
