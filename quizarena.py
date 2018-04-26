@@ -1,9 +1,5 @@
-from threading import Thread
-
 from flask import Flask, send_from_directory
-from flask_sslify import SSLify
 
-from quiz.Session import Session
 from quiz.category_api import category_app
 from quiz.session_api import session_app
 from user.user_api import user_app
@@ -32,5 +28,4 @@ def sharing(session_id):
 
 
 if __name__ == '__main__':
-    Thread(target=Session.tidy_up_sessions).start()
     app.run()
