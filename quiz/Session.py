@@ -147,7 +147,9 @@ class Session:
     @staticmethod
     def tidy_up_sessions():
         while True:
-            session_coll.update_many({'deadline': {'$lt': datetime.now()}, 'closed': False}, {'$set': {'closed': True}})
+            closing_id = session_coll.find_one({'deadline': {'$lt': datetime.now()}, 'closed': False})
+            if closing_id is not None:
+                Session(closing_id['_id']).close()
             session_coll.delete_many({'deadline': {'$lt': datetime.now() - timedelta(days=1)}})
             sleep(1)
 
