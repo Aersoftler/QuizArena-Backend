@@ -129,7 +129,7 @@ class Session:
 
     def set_db_name(self):
         self.name = self.name if self.name != '' else \
-            list(session_coll.find_one({primary_key: ObjectId(self.id)}, {primary_key: 0, 'name': 1}))[0]
+            session_coll.find_one({primary_key: ObjectId(self.id)}, {primary_key: 0, 'name': 1})['name']
 
     def close(self):
         self.set_db_name()
