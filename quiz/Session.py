@@ -147,7 +147,7 @@ class Session:
     def get_result(self):
         users = self.get_users()
         for i, user in enumerate(users):
-            users[i]['user'] = User(user['user']).get_display_name()
+            users[i]['display_name'] = User(user['user']).get_display_name()
         return users
 
     @staticmethod
