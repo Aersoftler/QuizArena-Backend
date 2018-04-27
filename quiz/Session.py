@@ -138,7 +138,8 @@ class Session:
         message_body = 'Die Quizarena ' + self.name + ' ist beendet worden. Siehe dir die Ergebnisse an :)'
         push_service.notify_multiple_devices(registration_ids=device_ids,
                                              message_title=messsage_title,
-                                             message_body=message_body)
+                                             message_body=message_body,
+                                             data_message={"session": self.id})
         session_coll.update_one({primary_key: ObjectId(self.id)}, {'$set': {'closed': True}})
 
     def get_device_tokens(self):
