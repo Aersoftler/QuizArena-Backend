@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory
+from flask_sslify import SSLify
 
 from quiz.category_api import category_app
 from quiz.session_api import session_app
