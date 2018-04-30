@@ -35,3 +35,10 @@ def download():
 
 if __name__ == '__main__':
     app.run()
+
+
+"""
+Anmerkungen für Lucas
+    - viele Strings, die hier immer wieder genutzt werden, sollten in Konstanten ausgelagert werden (in allen Klassen)
+        (Bsp: 'static' von oben)
+"""
