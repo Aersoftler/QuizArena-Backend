@@ -158,7 +158,7 @@ class Session:
             if closing_id is not None:
                 Session(closing_id['_id']).close()
             session_coll.delete_many({'deadline': {'$lt': datetime.now() - timedelta(days=1)}})
-            sleep(1)
+            sleep(60)
 
     @staticmethod
     def get_all_sessions():
